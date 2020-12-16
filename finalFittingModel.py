@@ -29,23 +29,22 @@ font = {'family': 'sans-serif',
 en = input("Which regression is preferred?  Normal (A), Robust (B), Cauchy (C):  ")
 
 
-"""Function hill imports a starting value for 3 parameters (thetaMax, hill coefficient, and EC50) and
+"""Function hill imports a starting value for 3 parameters (amplitude, peak shift, death proportionality constant) and
 returns the sum of the residuals squared to be minimized"""
 def hill(x, time, z, w):
 
     c = 2*np.pi/29.5
 
-    if en == 'B' or en == 'b':
+    if en == 'B' or en == 'b': #robust regression
         reg = sum(w[i]*2*((1+(x[0]*c*np.sin(c*(x[1]+(i+29.5)))/(c**2+.36)+.6*x[0]*np.cos(c*(x[1]+(i+29.5)))/(c**2+.36)+x[2]*np.exp(-.6*(i+29.5)) - z[i])**2)**.5-1) for i in range(len(time)))
-    elif en == 'C' or en == 'c':
+    elif en == 'C' or en == 'c': #cauchy regression
         reg = sum(w[i]*np.log(1+(x[0]*c*np.sin(c*(x[1]+(i+29.5)))/(c**2+.36)+.6*x[0]*np.cos(c*(x[1]+(i+29.5)))/(c**2+.36)+x[2]*np.exp(-.6*(i+29.5)) - z[i])**2) for i in range(len(time)))
-    else:
+    else: #normal regression
         reg = sum(w[i]*(x[0]*c*np.sin(c*(x[1]+(i+29.5)))/(c**2+.36)+.6*x[0]*np.cos(c*(x[1]+(i+29.5)))/(c**2+.36)+x[2]*np.exp(-.6*(i+29.5)) - z[i])**2 for i in range(len(time)))
 
     return reg
 
-"""Function plotIndFits imports parameters, concentration and response values, and a binary value for whether
-to plot on a semilog plot and plots the fitted curve with the data"""
+"""Function plotIndFits imports parameters to plot the fitted curve with the data"""
 def plotIndFits(params, lunarDays, cpue, sizes, error):
     fig2 = plt.figure(figsize=(10, 10))
     index = np.linspace(0, 29.5, round(29.5 * 10))
@@ -102,12 +101,12 @@ def main():
 
     abs_file_path = "C:/Users/Richard/Desktop/desktop/Squids/FinalSquidCalculations_BB.csv"
     with open(abs_file_path, newline='') as csvfile:
-        totalData = list(csv.reader(csvfile))
+        totalData = list(csv.reader(csvfile)) #read in data file
 
 
     lunarIndex = list(np.array(totalData)[1:,1])
     cpue = list(np.array(totalData)[1:,23])
-    raw_weights = list(np.array(totalData)[1:,11])
+    raw_weights = list(np.array(totalData)[1:,11]) #extract data to lists
 
 
 
@@ -115,16 +114,16 @@ def main():
     for i in range(len(lunarIndex)):
         lunarIndex[i] = float(lunarIndex[i])
         cpue[i] = float(cpue[i])
-        raw_weights[i] = float(raw_weights[i])
+        raw_weights[i] = float(raw_weights[i]) #convert strings to floats
 
 
 
 
     norm_weights = []
     for x in range(len(raw_weights)):
-        norm_weights.append(raw_weights[x]/np.sum(raw_weights))
+        norm_weights.append(raw_weights[x]/np.sum(raw_weights)) #calculate weights for each data point based on sampling time
 
-    siz=list(5*np.array(raw_weights))
+    siz=list(5*np.array(raw_weights)) #apply weights to the size of plotted points
 
 
     x0 = np.array([0.5, 2.0, 0.05])  # initial guess for curve fit parameters
@@ -158,7 +157,7 @@ def main():
 
     plotIndFits(params, lunarIndex, cpue, siz, paramError)  # plot curves with data
 
-    #popSize = (params[0]*.613*np.sin(.613*(params[1] + t))) / (.613**2 + 0.36) + (0.6*params[0]*np.cos(.613*(params[1] + t))) / (.613**2 + 0.36) + params[2]*np.exp(-0.6*t)
+   
 
 
 
