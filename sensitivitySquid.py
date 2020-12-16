@@ -28,7 +28,7 @@ font = {'family': 'sans-serif',
 en = input("Which regression is preferred?  Normal (A), Robust (B), Cauchy (C):  ")
 
 
-"""Function hill imports a starting value for 3 parameters (thetaMax, hill coefficient, and EC50) and
+"""Function hill imports a starting value for 3 parameters and
 returns the sum of the residuals squared to be minimized"""
 def hill(x, time, z, w, mu):
 
